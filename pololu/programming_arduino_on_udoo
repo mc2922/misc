@@ -1,0 +1,15 @@
+Strange behaviors when programming arduino on UDOO - follow this procedure to properly program:
+
+1. DO NOT program using the inbuilt LUbuntu Arduino IDE
+2. Connect external pc via mini-USB to UDOO via USB CN6
+3. open minicom on external pc with settings /dev/ttyUSB0 115200 8N1 no hardware/software flow control - then the following in quick succession when wanting to upload new sketch:
+4. listen on serial port while rebooting/booting UDOO with jumper on J18
+5. interrupt boot sequence when prompted
+6. CLOSE minicom to free serial port
+7. move jumper from J18 to J22 (the one directly next to J18) for ~1 second
+8. move jumper from J22 to J16 (the one directly below J22) for ~1 second
+9. remove jumper from J16
+10. upload sketch from external computer using Arduino IDE nightly, with /dev/ttyUSB0 and Arduino Due (Programming Port) - REMEMBER! You may need to chmod 777 /dev/ttyUSB0 to allow writing out of the serial port to arduino
+11. when finished uploading place jumper back on J18
+12. press reset button on UDOO to boot back into onboard LUbuntu
+13. DONE!

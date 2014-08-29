@@ -19,7 +19,7 @@
 ******************************************************************************************/
 
 /******************************************************************************************
-* njord_state.cpp RazorAHRS.cpp -Wall -D_REENTRANT -lpthread -o njord_state -llcm
+* g++ njord_state.cpp RazorAHRS.cpp -Wall -D_REENTRANT -lpthread -o njord_state -llcm
 ******************************************************************************************/
 
 #include <iostream>   // cout()

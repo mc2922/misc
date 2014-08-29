@@ -1,0 +1,1 @@
+Arduino accepts string of form 1000,1000,1000,1000,1000,1000 to control each of six out of eight servos via Serial1 (pin 18 TX) - DO NOT CONNECT pin 17 RX, since pololu mini servo serial controller is 5V and UDOO Arduino DUE is only 3.3V, YOU WILL FRY THE BOARD! 3.3V is enough for tty logic required by pololu.
