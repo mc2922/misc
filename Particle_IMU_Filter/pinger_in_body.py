@@ -5,11 +5,11 @@ import matplotlib.pyplot as plt
 import copy
 
 class particleIMU(object):
-
 	def __init__(self, num_particles):
-		self.yaw = None
 		self.num_particles = num_particles
-		self.particles_l = np.zeros([2,self.num_particles])
+		self.particles_l = np.zeros([3,self.num_particles])
+		self.weights = np.zeros([1,self.num_particles])
+		self.yaw = None
 		self.a_prev = np.zeros([1,3])
 
 	def Ry(self, th):
@@ -82,29 +82,30 @@ class particleIMU(object):
 	def upStateAcoustics_mod(self, heatmap):
 		lRb_val = self.lRb()
 		bRl_val = lRb_val.T
-		N = 
+		# N =
+		print 'THIS IS NOT DONE!!! STOP NOWW'
 
-
-function upStateAcoustics!(x::State, wGrid::Array{Float64,2})
-  #importance sampling step to incorporate beam forming measurement information
-  lRb = getlRb(x)
-  # all particles in body ball
-  bRl = lRb'
-  N = size(bpts,2)
-  azel = zeros(2,N)
-  for i in 1:N
-    azel[:,i] = peRb(vec(bRl*x.lParticles[:,i]))
-  end
-  # sample importance
-
-  #resample (equal weight) -- decrease in inter-particle correlation
-
-  # go back to local ball
-  for i in 1:N
-    x.lParticles[:,i] = lRb*bRpe(vec(azel[:,i]))
-  end
-  nothing
-end
+	#
+	# function upStateAcoustics!(x::State, wGrid::Array{Float64,2})
+	#   #importance sampling step to incorporate beam forming measurement information
+	#   lRb = getlRb(x)
+	#   # all particles in body ball
+	#   bRl = lRb'
+	#   N = size(bpts,2)
+	#   azel = zeros(2,N)
+	#   for i in 1:N
+	#     azel[:,i] = peRb(vec(bRl*x.lParticles[:,i]))
+	#   end
+	#   # sample importance
+	#
+	#   #resample (equal weight) -- decrease in inter-particle correlation
+	#
+	#   # go back to local ball
+	#   for i in 1:N
+	#     x.lParticles[:,i] = lRb*bRpe(vec(azel[:,i]))
+	#   end
+	#   nothing
+	# end
 
 	### HELPERS ###
 	def rad_to_deg(self, rad):
@@ -113,13 +114,16 @@ end
 	def deg_to_rad(self, deg):
 		return deg*np.pi/180.0
 
-	def sphere_uniform(self, num_points):
-		u = np.random.uniform(size=num_points)
-		v = np.random.uniform(size=num_points)
-		phi = self.rad_to_deg(2*np.pi*u)
+	def init_sphere_uniform(self):
+		self.weights = np.ones(self.num_particles)/self.num_particles
+		u = np.random.uniform(size=self.num_particles)
+		v = np.random.uniform(size=self.num_particles)
+		psi = self.rad_to_deg(2*np.pi*u)
 		theta = self.rad_to_deg(np.arccos(2*v - 1))
-		weights = np.ones(num_points)/num_points
-		return phi, theta, weights
+		self.particles_l[0,:] = np.sin(self.deg_to_rad(theta))*np.cos(self.deg_to_rad(psi))
+		self.particles_l[1,:] = np.sin(self.deg_to_rad(theta))*np.sin(self.deg_to_rad(psi))
+		self.particles_l[2,:] = np.cos(self.deg_to_rad(theta))
+		# return psi, theta, weights
 
 	def spherical_mean_particles(self, particles_phi, particles_theta):
 		mean_phi = np.arctan2(np.mean(np.sin(deg_to_rad(particles_phi))), np.mean(np.cos(deg_to_rad(particles_phi))))

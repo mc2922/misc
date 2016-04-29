@@ -78,12 +78,11 @@ function upStateIMU!(x::State, w::Array{Float64,1}, a::Array{Float64,1})
   nothing
 end
 
-function upStateAcoustics!(x::State, wGrid::Array{Float64,2})
+function upStateAcoustics!(x::State, N::Int, wGrid::Array{Float64,2})
   #importance sampling step to incorporate beam forming measurement information
   lRb = getlRb(x)
   # all particles in body ball
   bRl = lRb'
-  N = size(bpts,2)
   azel = zeros(2,N)
   for i in 1:N
     azel[:,i] = peRb(vec(bRl*x.lParticles[:,i]))
@@ -118,7 +117,7 @@ function runEstimator(data; N=500)
         #   magUpdateYaw!(x,mag)
         # end
         # if acoustics
-          # upStateAcoustics(X,wGrid)
+          # upStateAcoustics(X,N,wGrid)
         # end
       end
     end
