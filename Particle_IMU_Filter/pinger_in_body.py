@@ -8,8 +8,8 @@ class particleIMU(object):
 	def __init__(self, num_particles):
 		self.num_particles = num_particles
 		self.particles_l = np.zeros([3,self.num_particles])
-		self.weights = np.zeros([1,self.num_particles])
-		self.yaw = None
+		self.weights = np.ones([1,self.num_particles])/self.num_particles
+		self.yaw = 0.0
 		self.a_prev = np.zeros([1,3])
 
 	def Ry(self, th):
@@ -34,6 +34,7 @@ class particleIMU(object):
 		g = acc/np.linalg.norm(acc)
 		m = mag/np.linalg.norm(mag)
 		v = np.cross(g.T,m.T)
+		v = v/np.linalg.norm(v)
 		w = np.cross(v,g.T)
 		return np.hstack((w.T, v.T, g))
 
@@ -46,6 +47,9 @@ class particleIMU(object):
 
 	def lRb(self):
 		return np.dot(self.Rz(self.yaw), self.bRa(self.a_prev))
+
+	def lRb(self, accel):
+		return np.dot(self.Rz(self.yaw), self.bRa(acc=accel))
 
 	def propNavIMU(self, dt, w, a, yaw=0.0):
 		bRa_val = self.bRa(a)
