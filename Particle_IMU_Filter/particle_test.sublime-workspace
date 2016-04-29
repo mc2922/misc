@@ -1,0 +1,1197 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"bR",
+				"bRp"
+			],
+			[
+				"mag",
+				"magYaw"
+			],
+			[
+				"part",
+				"particleIMU"
+			],
+			[
+				"num",
+				"num_particles"
+			],
+			[
+				"lobe",
+				"lobe_values_z"
+			],
+			[
+				"azimu",
+				"azimuths"
+			],
+			[
+				"elev",
+				"elevations"
+			],
+			[
+				"res",
+				"res_sampling"
+			],
+			[
+				"curr",
+				"curr_time"
+			],
+			[
+				"sou",
+				"source_xvec"
+			],
+			[
+				"sour",
+				"source_yvec"
+			],
+			[
+				"x",
+				"x_axis"
+			],
+			[
+				"x_ax",
+				"x_axes"
+			],
+			[
+				"vicon",
+				"vicon_pos"
+			],
+			[
+				"wf",
+				"wf"
+			],
+			[
+				"vico",
+				"vicon_orient"
+			],
+			[
+				"vic",
+				"vicon_orient"
+			],
+			[
+				"na",
+				"nav_heading"
+			],
+			[
+				"nav",
+				"nav_y"
+			],
+			[
+				"source",
+				"source_x"
+			],
+			[
+				"temp",
+				"temp_y"
+			],
+			[
+				"sourc",
+				"source_x"
+			],
+			[
+				"NAV",
+				"NAV_Y"
+			],
+			[
+				"acoustic",
+				"acoustic_filepath"
+			],
+			[
+				"Py",
+				"PyCBF"
+			],
+			[
+				"cbf",
+				"cbf_output_var_range"
+			],
+			[
+				"init",
+				"init_cbf_filter"
+			],
+			[
+				"var_",
+				"var_idxs"
+			],
+			[
+				"end",
+				"end_swath"
+			],
+			[
+				"freq",
+				"freq_sampling"
+			],
+			[
+				"phone",
+				"phone_array"
+			],
+			[
+				"get",
+				"get_full_matched_filter"
+			],
+			[
+				"max",
+				"max_range_idxs"
+			],
+			[
+				"cbf_",
+				"cbf_output_max_range"
+			],
+			[
+				"fu",
+				"full_matched_filter"
+			],
+			[
+				"look",
+				"look_elevations"
+			],
+			[
+				"uppe",
+				"upper_elev"
+			],
+			[
+				"lower_",
+				"lower_elev"
+			],
+			[
+				"col",
+				"col_idx"
+			],
+			[
+				"cbf_ou",
+				"cbf_output_max_azimuth"
+			],
+			[
+				"math",
+				"matched_filter"
+			],
+			[
+				"czt",
+				"czt_filter"
+			],
+			[
+				"ini",
+				"init_look_azimuths"
+			],
+			[
+				"sin",
+				"sin"
+			],
+			[
+				"get_",
+				"get_matched_filter"
+			],
+			[
+				"rela",
+				"relative_target_x"
+			],
+			[
+				"best",
+				"best_thetas"
+			],
+			[
+				"plan",
+				"G_plan"
+			],
+			[
+				"cenr",
+				"centroid_y"
+			],
+			[
+				"cen",
+				"centroid_x"
+			],
+			[
+				"reward",
+				"reward_nm"
+			],
+			[
+				"cent",
+				"center_idx"
+			],
+			[
+				"actua",
+				"actual_positions"
+			],
+			[
+				"actual",
+				"actual_positions"
+			],
+			[
+				"plan_nor",
+				"plan_norm"
+			],
+			[
+				"centr",
+				"centroid_y"
+			],
+			[
+				"centroid",
+				"centroid_x"
+			],
+			[
+				"sum",
+				"sum_num"
+			],
+			[
+				"numpy",
+				"numpyParallelSort"
+			],
+			[
+				"mean",
+				"mean_x"
+			],
+			[
+				"rewa",
+				"reward_total"
+			],
+			[
+				"centroi",
+				"centroid_plan"
+			],
+			[
+				"off",
+				"offset_alt_y"
+			],
+			[
+				"offset_alt",
+				"offset_alt_x"
+			],
+			[
+				"map",
+				"map_y"
+			],
+			[
+				"nei",
+				"neighbours_pos"
+			],
+			[
+				"floa",
+				"float_NAN"
+			],
+			[
+				"neigh",
+				"neighbours_uid"
+			],
+			[
+				"neig",
+				"neighbour_uid"
+			],
+			[
+				"neighb",
+				"neighbours_pos"
+			],
+			[
+				"node",
+				"node_list"
+			],
+			[
+				"comm",
+				"comms_distance"
+			],
+			[
+				"comms",
+				"comms_range"
+			],
+			[
+				"node_",
+				"node_uids"
+			],
+			[
+				"ping_",
+				"ping_delay"
+			],
+			[
+				"ping",
+				"ping_time"
+			],
+			[
+				"wpt",
+				"wpt_dist"
+			],
+			[
+				"wp",
+				"wpt_y"
+			],
+			[
+				"pit",
+				"pitch_pids_des"
+			],
+			[
+				"he",
+				"heading_pids_des"
+			],
+			[
+				"gps_s",
+				"gps_speeds"
+			],
+			[
+				"mid",
+				"midpoint_y_actual"
+			],
+			[
+				"whee",
+				"wheel_base"
+			],
+			[
+				"rate",
+				"rate_steer"
+			],
+			[
+				"angle_",
+				"angle_steer"
+			],
+			[
+				"pla",
+				"plan_np"
+			],
+			[
+				"actu",
+				"actual_uid"
+			],
+			[
+				"act",
+				"actual_y"
+			],
+			[
+				"ac",
+				"actual_x"
+			],
+			[
+				"nieghb",
+				"neighbours"
+			],
+			[
+				"best_the",
+				"best_thetas"
+			],
+			[
+				"bes",
+				"best_thetas"
+			],
+			[
+				"centro",
+				"centroid_actual"
+			],
+			[
+				"best_",
+				"best_reward"
+			],
+			[
+				"plan_norm",
+				"plan_norm_new"
+			],
+			[
+				"des",
+				"desired_norm"
+			],
+			[
+				"min",
+				"min_cost"
+			],
+			[
+				"thet",
+				"theta_samples"
+			],
+			[
+				"the",
+				"theta_sigma"
+			],
+			[
+				"desi",
+				"desired_norm"
+			],
+			[
+				"corr",
+				"corr_nm"
+			],
+			[
+				"desire",
+				"desired_norm"
+			],
+			[
+				"scale",
+				"scale_points_N_nbrs"
+			],
+			[
+				"ope",
+				"open_nodes"
+			],
+			[
+				"veh",
+				"veh_tgt_list_xy"
+			],
+			[
+				"veh_list",
+				"veh_tgt_list_xy"
+			],
+			[
+				"optima",
+				"optimal_weights"
+			],
+			[
+				"rel",
+				"relative_target_y"
+			],
+			[
+				"optim",
+				"optimal_plan_positions"
+			],
+			[
+				"cur",
+				"cur_pos"
+			],
+			[
+				"sort",
+				"sort_formation_points"
+			],
+			[
+				"sorte",
+				"sorted_formation"
+			],
+			[
+				"trail",
+				"trails_on"
+			],
+			[
+				"trails",
+				"trails_on"
+			],
+			[
+				"nu",
+				"num_pings"
+			],
+			[
+				"ve",
+				"veh_comms_delay_list"
+			],
+			[
+				"bh",
+				"bhv_rigidneighbourregistration"
+			],
+			[
+				"key",
+				"key_vector"
+			],
+			[
+				"unp",
+				"unpacked_data"
+			],
+			[
+				"upd",
+				"update_multiplier"
+			],
+			[
+				"prev",
+				"previous_time"
+			],
+			[
+				"pymoo",
+				"pymoos"
+			],
+			[
+				"bhv",
+				"bhv_assignmentregistration"
+			],
+			[
+				"mp",
+				"mp_neighbours"
+			],
+			[
+				"mp_",
+				"mp_neighbours"
+			],
+			[
+				"msg",
+				"msg_to_all"
+			],
+			[
+				"pip",
+				"pipe_parent"
+			],
+			[
+				"curre",
+				"current_time"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "particle_test.py",
+			"settings":
+			{
+				"buffer_size": 6974,
+				"line_ending": "Unix",
+				"name": "import lcm"
+			}
+		},
+		{
+			"file": "pinger_in_body.py",
+			"settings":
+			{
+				"buffer_size": 3154,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "pingerInbody.jl",
+			"settings":
+			{
+				"buffer_size": 4014,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bot_core_image_t.lcm",
+			"settings":
+			{
+				"buffer_size": 2694,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bot_core_image_metadata_t.lcm",
+			"settings":
+			{
+				"buffer_size": 97,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "microstrain_ins_t.lcm",
+			"settings":
+			{
+				"buffer_size": 182,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "vicon_body_t.lcm",
+			"settings":
+			{
+				"buffer_size": 402,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/rypkema/.bashrc",
+		"/home/rypkema/Workspace/Particle_IMU_Filter/pingerInbody.jl",
+		"/home/rypkema/Workspace/Particle_IMU_Filter/von-mises-fisher.py",
+		"/home/rypkema/Workspace/Particle_IMU_Filter/sphvars.py",
+		"/home/rypkema/Workspace/Particle_IMU_Filter/kent_distribution.py",
+		"/home/rypkema/Workspace/Particle_IMU_Filter/kent_example.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_lcm/manager_lcm.py",
+		"/home/rypkema/Workspace/Sandshark/beamforming/python/czt.py",
+		"/home/rypkema/Workspace/Sandshark/beamforming/python/beamforming_test.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_pymoos/node_pymoos.py",
+		"/home/rypkema/Workspace/Sandshark/beamforming/python/successive_cbf.py",
+		"/home/rypkema/Workspace/Sandshark/beamforming/python/pPyCBF.py",
+		"/home/rypkema/Workspace/Sandshark/DAQ/read_mcc_1608FS_plus.cpp",
+		"/home/rypkema/Workspace/Sandshark/DAQ/read_mcc_1608FS_plus.h",
+		"/home/rypkema/Workspace/Sandshark/DAQ/pmd.h",
+		"/home/rypkema/Workspace/Sandshark/DAQ/usb-1608FS-Plus.h",
+		"/home/rypkema/Workspace/LAMSS/missions-lamss/auv/unicorn/last.moos",
+		"/home/rypkema/Workspace/LAMSS/missions-lamss/auv/unicorn/moos.meta",
+		"/home/rypkema/Workspace/LAMSS/missions-lamss/auv/unicorn/array_plugs/pBeamform.plug",
+		"/home/rypkema/Workspace/Sandshark/beamforming/python/scipy_fft_helper.py",
+		"/home/rypkema/Workspace/Sandshark/beamforming/python/setup.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_cython_iterative/bhv_rnr.pyx",
+		"/home/rypkema/Workspace/Sandshark/beamforming/python/succ_cbf.pyx",
+		"/home/rypkema/Workspace/MIT/classes/project1/project1.py",
+		"/home/rypkema/Workspace/MIT/classes/6.884/hw2/1.py",
+		"/home/rypkema/Workspace/Sandshark/scripts/read_frontseat_log_test.py",
+		"/home/rypkema/Workspace/Sandshark/scripts/read_frontseat_log.py",
+		"/home/rypkema/Workspace/MIT/classes/6.832/sandbox/projects/glider/python/visualization_client.py",
+		"/home/rypkema/Workspace/Sandshark/beamforming/successive_cbf.m",
+		"/home/rypkema/Workspace/Sandshark/beamforming/Beamforming_3D_CZT_Rypkema.m",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_cython_iterative/setup.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_cython_iterative/node.pxd",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_cython_iterative/bhv_ar_test.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/bhv_assignmentregistration2_w_avg.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_cython_iterative/bhv_ar_median.pyx",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_cython_iterative/bhv_ar.pyx",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_cython_iterative/bhv_pnr.pyx",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_cython_iterative/node.pyx",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_cython_iterative/graph.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_cython_iterative/manager.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_cython_iterative/parallelSort.pyx",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_cython_iterative/Makefile",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/bhv_pairwiseneighbourreferencing.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/cython/setup.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/cython/bhv_pairwisenbr.pyx",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/cpp/bhv_pairwisenbr.cpp",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/manager.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/bhv_assignmentregistration2.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_cython_iterative/comms.pyx",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_cython_iterative/node_holonomic.pyx",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/cython/bhv_pairwisenbr_cy.pyx",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/cython/Rectangle.pyx",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_cython_iterative/node_holonomic.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_cython_iterative/node.py",
+		"/home/rypkema/Workspace/Sandshark/scripts/read_frontseat_log_PID.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/bhv_assignmentregistration2_w_ang.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/bhv_physicomimetics_orig.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/cython/bhv_pairwisenbr.cpp",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/cython/bhv_physicomimetics.pyx",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/graph.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/neighbour_registration/util.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/neighbour_registration/manager.py",
+		"/home/rypkema/Workspace/stage_universe/universe/universe.cc",
+		"/home/rypkema/Workspace/stage_universe/universe/universe.h",
+		"/home/rypkema/Workspace/stage_universe/universe/controller.cc",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/node_holonomic.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/node.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/comms.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/bhv_assignmentregistration.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/bhv_assignmentregistration_original.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/bhv_rigidneighbourregistration.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/neighbour_registration/graph.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/neighbour_registration/node.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_lcm/bhv_rigidneighbourregistration.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_lcm/node_lcm.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_pymoos/visualizer_pymoos.py",
+		"/home/rypkema/Workspace/Swarm_2015/moos-ivp-marineswarm/src/lib_behaviors/AssignmentRegistration/BHV_AssignmentRegistration.cpp",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_lcm/bhv_pairwiseneighbourreferencing.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/formation_manager.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_multiprocess/bhv_rigidneighbourregistration.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_multiprocess/node_parallel.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_multiprocess/manager_parallel.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_pymoos/bhv_pairwiseneighbourreferencing.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_pymoos/bhv_rigidneighbourregistration.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_pymoos/bhv_physicomimetics.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/munkres_test.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/glumpy_test.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/node_test.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/lattice_minimize.m",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/lattice_generate.m",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/lattice_generate_natural_num.m",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_iterative/bhv_isosceles.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/formation_manager.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/node.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/comms.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_pymoos/bhv_assignmentregistration_original.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_pymoos/procman_config.pmd",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/manager_parallel.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_lcm/bhv_physicomimetics.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_lcm/bhv_assignmentregistration.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_pymoos/pymoos_examples/callbackcomms_timewarp.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_pymoos/pymoos_examples/callbackcomms.py",
+		"/home/rypkema/Workspace/python-moos/pyMOOS.cpp",
+		"/home/rypkema/Workspace/Swarm_2015/moos-ivp-moossafir/src/uFldPingManager_CGG/FldPingManager_CGG.cpp",
+		"/home/rypkema/Workspace/Swarm_2015/moos-ivp-moossafir/src/pThreeChannelCurrent/ThreeChannelCurrent.cpp",
+		"/home/rypkema/Workspace/Swarm_2015/moos-ivp-moossafir/src/pFormationQualityMetric/FormationQualityMetric.cpp",
+		"/home/rypkema/Workspace/Swarm_2015/moos-ivp-marineswarm/src/pMSEASOceanModelVisDirect/MSEASOceanModelVisDirect.cpp",
+		"/home/rypkema/Workspace/Swarm_2015/moos-ivp-marineswarm/src/iMSEASOceanModelDirect/MSEASOceanModelDirect.cpp",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/bhv_assignmentregistration.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/vispy_test.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_lcm/vispy_test.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_lcm/parallel_attempt/node_lcm_nowait.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/manager_parallel_matplotlib.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_lcm/process_test.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_lcm/parallel_attempt/node_lcm_w_queue.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/node_parallel.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_lcm/examples/test_send.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_lcm/examples/test_recv.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_lcm/node_lcm_w_pipe.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_lcm/test_send.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_lcm/test_recv.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/swarm_lcm/test_node.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/bhv_pairwiseneighbourreferencing.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/bhv_rigidneighbourregistration.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/comms_parallel.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/node_test.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/parallel_test2.py",
+		"/home/rypkema/Workspace/Swarm_2015/python_bhvs/parallel_consumer.py"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"lobe_values_x",
+			"source",
+			"y1",
+			"filepath",
+			"factor_swath",
+			"print",
+			"8000",
+			"natsort",
+			")\n",
+			"pi",
+			"print",
+			"q",
+			"scale_points_centroid",
+			",\"))",
+			"nodes_x",
+			"print",
+			"added_nodes",
+			"nodes_x",
+			"node_class",
+			"compute_target",
+			"node_tgts",
+			"node_tgs",
+			"node_trail_y",
+			"node_trail_list_y",
+			"node_trail_list_x",
+			"node_tgt_list",
+			"node_state_list",
+			"num_veh",
+			"veh_trail_list",
+			"veh_tgt_list_xy",
+			"node_list_xy",
+			"veh_list",
+			"unsigned",
+			"double",
+			"UpdateSensor",
+			"float",
+			"y_meters_surface",
+			"veh_list_xy",
+			"graph",
+			"self.plan",
+			"sortFormationPoints",
+			"veh_comms",
+			"max_ident",
+			"node_class",
+			"trails_on",
+			"veh_trail_list_x",
+			"trails_on",
+			"ratio",
+			"self.ident",
+			"node.ident",
+			"self.ident",
+			"node.neighbours",
+			"ff",
+			"True",
+			"random",
+			"subscribe",
+			"node.neighbours",
+			"mp_positions",
+			"node.neighbours",
+			"np",
+			"lc",
+			"latest_ping_time",
+			"ident",
+			"rotate",
+			"translate",
+			"perspective",
+			"run",
+			"dt",
+			"veh_comms",
+			"			# centroid_plan = (np.transpose(weights)*plan_positions)/weights.sum(axis=0)\n			# plan_positions = plan_po",
+			"float64",
+			"for i in range(1,n+1):\n# 	g.grow_graph(i,True)\n# 	pts = np.array(g.points)\n# 	points.set_xdata(pts[:,0])\n# 	points.set_ydata(pts[:,1])\n# 	fig.canvas.draw()\n# 	time.sleep(0.05)",
+			"x_centroid_actual",
+			"10",
+			"):\n",
+			";",
+			"y",
+			"veh_trail_list_x",
+			"behaviour",
+			"				\n",
+			"comms_timer_callback",
+			"comms_interval",
+			"x",
+			"set_",
+			"trail_x",
+			"axes",
+			"for",
+			"math.",
+			"theta",
+			"phi_desired",
+			"heading2XY",
+			"thermal_circle1 = plt.Circle((0,0), 1000, color='0.1', alpha=0.1)\n# thermal_circle2 = plt.Circle((0,0), 900, color='0.1', alpha=0.1)\n# thermal_circle3 = plt.Circle((0,0), 800, color='0.1', alpha=0.1)\n# thermal_circle4 = plt.Circle((0,0), 700, color='0.1', alpha=0.1)\n# thermal_circle5 = plt.Circle((0,0), 600, color='0.1', alpha=0.1)\n# ax.add_artist(thermal_circle1)\n# ax.add_artist(thermal_circle2)\n# ax.add_artist(thermal_circle3)\n# ax.add_artist(thermal_circle4)\n# ax.add_artist(thermal_circle5)",
+			"checkDistofWP",
+			"homether",
+			"dlon",
+			"dlat",
+			"Tlon",
+			"Tlat",
+			"dx",
+			"tcp_ip",
+			"setNewTrajectoryTape",
+			"self.tape =",
+			"new_tape",
+			"GLIDER_ADDIT",
+			"3",
+			"[:,",
+			"JuliaTCPServ",
+			"control_loop",
+			"print",
+			"self",
+			"juliaTCPServerThread",
+			"scaling",
+			"readline",
+			"fgcntrin",
+			"fgfdm",
+			"mps2kt",
+			"kt2mps",
+			"m2ft",
+			"ft2m",
+			"scaling",
+			"parcellfun",
+			"view",
+			"lc",
+			"subscription",
+			"print",
+			"min_inte",
+			"leaf_size"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"float",
+			"double"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "particle_test.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6974,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5218,
+								5218
+							]
+						],
+						"settings":
+						{
+							"auto_name": "import lcm",
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 180.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "pinger_in_body.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3154,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1817,
+								1817
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 855.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "pingerInbody.jl",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4014,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								407,
+								407
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Julia.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "bot_core_image_t.lcm",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2694,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								389,
+								389
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 171.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "bot_core_image_metadata_t.lcm",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 97,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								44,
+								44
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "microstrain_ins_t.lcm",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 182,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "vicon_body_t.lcm",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 402,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								402,
+								402
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 27.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 118.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "particle_test.sublime-project",
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 212.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
