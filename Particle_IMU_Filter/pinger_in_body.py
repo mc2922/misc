@@ -10,26 +10,33 @@ class particleIMU(object):
 		self.particles_l = np.zeros([3,self.num_particles])
 		self.weights = np.ones([1,self.num_particles])/self.num_particles
 		self.yaw = 0.0
-		self.a_prev = np.zeros([1,3])
+		self.a_prev = np.zeros([3,1])
 
+	# rotation about y-axis (pitch)
 	def Ry(self, th):
 		return np.array([[np.cos(th),0.0,-np.sin(th)],[0.0,1.0,0.0],[np.sin(th),0.0,np.cos(th)]])
 
+	# rotation about z-axis (yaw)
 	def Rz(self, th):
 		return np.array([[np.cos(th),-np.sin(th),0.0],[np.sin(th),np.cos(th),0.0],[0.0,0.0,1.0]])
 
+	# point-to-body (convert from local point to body point given azimuth and declination)
 	def bRp(self, az, th):
 		return np.dot(self.Rz(az), self.Ry(th))
 
+	# psi/eta-to-body (convert from local point to body point given azimuth and elevation)
 	def bRpe(self, az, el):
 		return self.bRp(az, np.pi/2.0-el)
 
+	# psi/eta-point-to-body (convert from local point to body point given azimuth and elevation as vector)
 	def bRpe_pt(self, pt):
 		return self.bRpe(pt[0], pt[1])
 
+	# body-point-to-psi/eta (convert from body point to azimuth and elevation given a (x,y,z) body point)
 	def peRb_pt(self, pt):
-		return np.atan2(pt[1], pt[0]), np.atan2(np.linalg.norm(pt[0:2]), pt[2])
+		return np.arctan2(pt[0,1], pt[0,0]), np.arctan2(np.linalg.norm(pt[0,0:2]), pt[0,2])
 
+	# accel-to-body (convert from accel/mag to body)
 	def bRa(self, acc=np.array([[0.0],[0.0],[9.81]]), mag=np.array([[1.0],[0.0],[0.0]])):
 		g = acc/np.linalg.norm(acc)
 		m = mag/np.linalg.norm(mag)
@@ -38,6 +45,7 @@ class particleIMU(object):
 		w = np.cross(v,g.T)
 		return np.hstack((w.T, v.T, g))
 
+	# wrap between -PI and +PI
 	def wrapRad(self, th):
 		if th >= np.pi:
 			th = th-2.0*np.pi
@@ -45,12 +53,14 @@ class particleIMU(object):
 			th = th+2.0*np.pi
 		return th
 
-	def lRb(self):
-		return np.dot(self.Rz(self.yaw), self.bRa(self.a_prev))
+	# body-to-local given accel
+	def lRb(self, accel=None):
+		if accel == None:
+			return np.dot(self.Rz(self.yaw), self.bRa(self.a_prev))
+		else:
+			return np.dot(self.Rz(self.yaw), self.bRa(acc=accel))
 
-	def lRb(self, accel):
-		return np.dot(self.Rz(self.yaw), self.bRa(acc=accel))
-
+	# propagate IMU measurements to keep track of yaw in local frame
 	def propNavIMU(self, dt, w, a, yaw=0.0):
 		bRa_val = self.bRa(a)
 		aRb = bRa_val.T
@@ -61,6 +71,7 @@ class particleIMU(object):
 		lRb = np.dot(self.Rz(yaw),aRb)
 		return lRb, yaw
 
+	# TO-DO: use magnetometer to constrain IMU-calculated yaw in local frame
 	def magUpdateYaw_mod(self, mag, mRef=np.array([[1.0],[0.0],[0.0]])):
 		lMag = np.dot(self.lRb(),mag)
 		magYaw = np.atan2(lMag[1,0],lMag[0,0])
@@ -72,12 +83,14 @@ class particleIMU(object):
 	def yawFilter(self):
 		return 0.0
 
-	def projPtsPlaneToBall_mod(self, pts, bpts=np.zeros([3,0])):
+	# given points in azimuth/elevation, convert to points in body frame
+	def projPtsPlaneToBodyBall_mod(self, pts, bpts=np.zeros([3,0])):
 		cols = pts.shape[1]
 		if cols != bpts.shape[1]:
 			bpts = np.zeros([3,cols])
 		for i in range(0,cols):
-			bpts[:,i] = self.bRpe(pts[:,i])
+			#bpts[:,i] = self.bRpe(pts[:,i])
+			bpts[:,i] = np.dot(p.bRpe(pts[:,i]), np.array([[1.0],[0.0],[0.0]]))
 
 	def upStateIMU_mod(self, dt, w, a):
 		lRb, yaw = self.propNavIMU(dt, w, a, self.yaw)
@@ -86,7 +99,11 @@ class particleIMU(object):
 	def upStateAcoustics_mod(self, heatmap):
 		lRb_val = self.lRb()
 		bRl_val = lRb_val.T
-		# N =
+		N = self.particles_l.shape[1]
+		az_el = np.zeros([2,N])
+		for i in range(0,N):
+			az_el[:,i] = self.peRb_pt(np.dot(bRl_val, self.particles_l[:,i]))
+		print az_el*180/np.pi
 		print 'THIS IS NOT DONE!!! STOP NOWW'
 
 	#
