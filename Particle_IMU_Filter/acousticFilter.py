@@ -16,21 +16,31 @@ from bot_externals.draw_utils import publish_pose_list, publish_sensor_frame, pu
 import cv2
 
  # The acoustic filter file, with visualization in collections rendered/viewer
-
+azimuths = np.linspace(0,360,360)*np.pi/180.0
+elevations = np.linspace(0,180,180)*np.pi/180.0
+# parameters for spherical gaussian
+lobe_sharpness = 1
+lobe_amplitude = 2
+lobe_values = np.zeros([elevations.shape[0],azimuths.shape[0]])
+lobe_values_x = np.zeros([elevations.shape[0],azimuths.shape[0]])
+lobe_values_y = np.zeros([elevations.shape[0],azimuths.shape[0]])
+lobe_values_z = np.zeros([elevations.shape[0],azimuths.shape[0]])
+for i, elev in enumerate(elevations):
+    for j, azim in enumerate(azimuths):
+        lobe_values_x[i,j] = np.sin(elev)*np.cos(azim)
+        lobe_values_y[i,j] = np.sin(elev)*np.sin(azim)
+        lobe_values_z[i,j] = np.cos(elev)
 
 # lets see what happen
 class theFilter(object):
     def __init__(self):
-        #self.N = 500
         self.N = 1
         self.prtObj = particleIMU(self.N)
         self.prtObj.init_sphere_uniform()
         self.viconmsg = None
         self.imumsg = None
-
-        self.prtObj.particles_l[0,0] = 1;
-        self.prtObj.particles_l[1,0] = 0;
-        self.prtObj.particles_l[2,0] = 0;
+        self.counter = 0
+        self.max_pt = np.zeros([3,1])
 
     def drawParticles(self, offset=[0,0,0]):
         X = copy.copy(self.prtObj.particles_l.T)
@@ -56,6 +66,32 @@ class theFilter(object):
             o = Pose.from_rigid_transform(1, rt)
             # plot accelerometer estimated orientation of IMU
             publish_pose_list('IMUpose', [o], frame_id='origin')
+            publish_cloud('particle_max', self.max_pt.T+self.viconmsg.pos, c='b', frame_id='origin')
+
+    def gen_heatmap(self, phi, theta):
+        if self.counter%120 == 0:
+            lobe_values = lobe_values_x*np.sin(theta)*np.cos(phi) + lobe_values_y*np.sin(theta)*np.sin(phi) + lobe_values_z*np.cos(theta)
+            lobe_values = lobe_amplitude*np.exp(lobe_sharpness*(lobe_values-1))
+            min_lobe = np.min(lobe_values)
+            max_lobe = np.max(lobe_values)
+            lobe_values = (lobe_values-min_lobe)/(max_lobe-min_lobe)*255.0
+            h = lobe_values.astype(int)
+            h = np.ndarray.tolist(h.flatten())
+            h = [chr(n) for n in h]
+            h = ''.join(h)
+            msg = image_t()
+            msg.utime = self.counter*1e5/12.0
+            msg.width = 360
+            msg.height = 180
+            msg.row_stride = 360
+            msg.pixelformat = 1497715271
+            msg.size = len(h)
+            msg.data = h
+            msg.nmetadata = 0
+            #lc.publish("BF_HEATMAP_ONLINE", msg.encode())
+            #print 'elevation:', theta*180/np.pi, 'azimuth:', phi*180/np.pi
+            lc.publish("BF_HEATMAP", msg.encode())
+        self.counter += 1
 
     def vicon_handler(self,channel, data):
     	self.viconmsg = body_t.decode(data)
@@ -101,14 +137,40 @@ class theFilter(object):
         R = tf_construct(x_bf.T, y_bf.T)
         p = Pose.from_rigid_transform(2, RigidTransform.from_Rt(R,self.viconmsg.pos))
         publish_pose_list('VICONpose', [p], frame_id='origin')
+        print 'R', R
+
+        #drawing true max as point
+        if self.imumsg != None:
+            im2 = np.zeros([180,360])
+            PV = np.array([30,30,4]) - self.viconmsg.pos
+            PV_hat = np.array([1,0,0])
+            PV_hat = PV/(np.linalg.norm(PV))
+            publish_cloud('particle_true', PV_hat+self.viconmsg.pos, c='g', frame_id='origin')
+            lRb_val = self.prtObj.lRb()
+            bRl_val = lRb_val.T
+            #dot_prod = np.dot(bRl_val, np.array(PV_hat))
+            dot_prod = np.dot(np.matrix(R).T, np.array(PV_hat))
+            print 'dot_prod', dot_prod
+            az_el = self.prtObj.peRb_pt(dot_prod)   # local all the way to plane
+            az_el = np.array(az_el)
+            if az_el[0] < 0:
+                az_el[0] = az_el[0]+2*np.pi
+            self.gen_heatmap(az_el[0], az_el[1])
+            print az_el[0]*180/np.pi, az_el[1]*180/np.pi
+            cv2.circle(im2, (int(az_el[0]*180/np.pi),int(az_el[1]*180/np.pi)), 5, (255,0,0))
+            cv2.imshow('img2', im2)
+            cv2.waitKey(1)
 
     def image_handler(self, channel, data):
         msg = image_t.decode(data)
         # print 'data type', type(msg.data)
         im = np.asarray(bytearray(msg.data), dtype=np.uint8).reshape(msg.height, msg.width)
+        el,az = np.unravel_index(im.argmax(), im.shape)
+        cv2.circle(im, (az,el), 5, (0,0,0))
+        lRb_val = self.prtObj.lRb()
+        self.max_pt = np.dot(lRb_val, np.matrix(self.prtObj.bRpe_pt(np.array([az*np.pi/180.0,el*np.pi/180.0]))))
         # print 'type is', type(im)
-        cv2.imshow('img', im)
-        cv2.waitKey(1)
+        
         # msg.utime = curr_time
         # msg.width = 360
         # msg.height = 180
@@ -118,8 +180,9 @@ class theFilter(object):
         # msg.data = h
         # msg.nmetadata = 0
         # lc.publish("BF_HEATMAP", msg.encode())
-        self.prtObj.upStateAcoustics_mod(None)
-
+        self.prtObj.upStateAcoustics_mod(None, im)
+        cv2.imshow('img', im)
+        cv2.waitKey(10)
 
 
 

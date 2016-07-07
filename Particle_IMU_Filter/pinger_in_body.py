@@ -4,6 +4,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import copy
 
+import cv2
+
+#XYZ <-> FWD-PRT-OVH
+#l - local frame (gravity aligned) initialization: relative to initial yaw
+#b - body frame
+
 class particleIMU(object):
 	def __init__(self, num_particles):
 		self.num_particles = num_particles
@@ -22,21 +28,21 @@ class particleIMU(object):
 
 	# point-to-body (convert from local point to body point given azimuth and declination)
 	def bRp(self, az, th):
-		return np.dot(self.Rz(az), self.Ry(th))
+		return np.dot(self.Rz(az), self.Ry(th))	#such that acoustic measurement x parameter (Rx) is equal to 0; azimuth, declination remain
 
 	# psi/eta-to-body (convert from local point to body point given azimuth and elevation)
 	def bRpe(self, az, el):
 		return self.bRp(az, np.pi/2.0-el)
 
-	# psi/eta-point-to-body (convert from local point to body point given azimuth and elevation as vector)
+	# psi/eta-point-to-body (convert from local point to body point given azimuth and elevation as vector) - returns pt
 	def bRpe_pt(self, pt):
-		return self.bRpe(pt[0], pt[1])
+		return np.dot(self.bRpe(pt[0], pt[1]), np.array([[1.0],[0.0],[0.0]]))
 
-	# body-point-to-psi/eta (convert from body point to azimuth and elevation given a (x,y,z) body point)
+	# body-point-to-psi/eta (convert from body point to azimuth and declination given a (x,y,z) point in body-ball)
 	def peRb_pt(self, pt):
 		return np.arctan2(pt[0,1], pt[0,0]), np.arctan2(np.linalg.norm(pt[0,0:2]), pt[0,2])
 
-	# accel-to-body (convert from accel/mag to body)
+	# azimuth-to-body (convert from accel/mag to body) - actually body-to-azimuth (want lRb = lRa * aRb -> Rz * bRa)
 	def bRa(self, acc=np.array([[0.0],[0.0],[9.81]]), mag=np.array([[1.0],[0.0],[0.0]])):
 		g = acc/np.linalg.norm(acc)
 		m = mag/np.linalg.norm(mag)
@@ -96,14 +102,18 @@ class particleIMU(object):
 		lRb, yaw = self.propNavIMU(dt, w, a, self.yaw)
 		self.a_prev = copy.deepcopy(a)
 
-	def upStateAcoustics_mod(self, heatmap):
+	def upStateAcoustics_mod(self, heatmap, im):
 		lRb_val = self.lRb()
 		bRl_val = lRb_val.T
 		N = self.particles_l.shape[1]
 		az_el = np.zeros([2,N])
 		for i in range(0,N):
-			az_el[:,i] = self.peRb_pt(np.dot(bRl_val, self.particles_l[:,i]))
-		print az_el*180/np.pi
+			az_el[:,i] = self.peRb_pt(np.dot(bRl_val, self.particles_l[:,i]))	# local all the way to plane
+			if az_el[0,i] < 0:
+				az_el[0,i] = az_el[0,i]+2*np.pi
+			cv2.circle(im, (int(az_el[0,i]*180/np.pi),int(az_el[1,i]*180/np.pi)), 3, (255,0,0))
+			print az_el[0,i]*180/np.pi, az_el[1,i]*180/np.pi
+			#print np.dot(lRb_val, np.matrix(self.bRpe_pt(az_el[:,0])))			# plane all the way to local
 		print 'THIS IS NOT DONE!!! STOP NOWW'
 
 	#
