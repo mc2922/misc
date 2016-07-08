@@ -34,13 +34,22 @@ for i, elev in enumerate(elevations):
 # lets see what happen
 class theFilter(object):
     def __init__(self):
-        self.N = 1
+        self.N = 500
         self.prtObj = particleIMU(self.N)
         self.prtObj.init_sphere_uniform()
         self.viconmsg = None
         self.imumsg = None
         self.counter = 0
-        self.max_pt = np.zeros([3,1])
+        self.imu_max = np.zeros([3,1])
+        self.vicon_max = np.zeros([3,1])
+        self.vicon_lRb = np.eye(3)
+
+        # transformation tests (5 points)
+        # self.prtObj.particles_l[:,0:1] = np.array([[np.sin(0*np.pi/180.0)],[0.0],[np.cos(0*np.pi/180.0)]])
+        # self.prtObj.particles_l[:,1:2] = np.array([[np.sin(30*np.pi/180.0)],[0.0],[np.cos(30*np.pi/180.0)]])
+        # self.prtObj.particles_l[:,2:3] = np.array([[np.sin(45*np.pi/180.0)],[0.0],[np.cos(45*np.pi/180.0)]])
+        # self.prtObj.particles_l[:,3:4] = np.array([[np.sin(60*np.pi/180.0)],[0.0],[np.cos(60*np.pi/180.0)]])
+        # self.prtObj.particles_l[:,4:5] = np.array([[np.sin(90*np.pi/180.0)],[0.0],[np.cos(90*np.pi/180.0)]])
 
     def drawParticles(self, offset=[0,0,0]):
         X = copy.copy(self.prtObj.particles_l.T)
@@ -53,8 +62,10 @@ class theFilter(object):
 
     def imu_handler(self, channel, data):
     	self.imumsg = ins_t.decode(data)
-        lRb, self.prtObj.yaw =  self.prtObj.propNavIMU(0.01, np.matrix(self.imumsg.gyro).T, np.matrix(self.imumsg.accel).T, yaw=self.prtObj.yaw)
-        self.prtObj.a_prev = copy.deepcopy(np.matrix(self.imumsg.accel).T)
+        #lRb, self.prtObj.yaw =  self.prtObj.propNavIMU(0.01, np.array(self.imumsg.gyro)[:,np.newaxis], np.array(self.imumsg.accel)[:,np.newaxis], yaw=self.prtObj.yaw)
+        self.prtObj.upStateIMU_mod(0.01, np.array(self.imumsg.gyro)[:,np.newaxis], np.array(self.imumsg.accel)[:,np.newaxis])
+        lRb = self.prtObj.lRb()
+        #self.prtObj.a_prev[:,0] = self.imumsg.accel
         if self.viconmsg:
             p = Pose.from_rigid_transform(0, RigidTransform(tvec=self.viconmsg.pos))
             # print 'acc', self.imumsg.accel
@@ -62,11 +73,11 @@ class theFilter(object):
             # lRb = self.prtObj.lRb(np.matrix(self.imumsg.accel).T)
             bRl = lRb.T
             rt = RigidTransform.from_Rt( bRl , self.viconmsg.pos)
-            print( "R, P, Y, calc_Y: %.3f, %.3f, %.3f, %.3f" % (rt.to_roll_pitch_yaw_x_y_z()[0]*180/np.pi, rt.to_roll_pitch_yaw_x_y_z()[1]*180/np.pi, rt.to_roll_pitch_yaw_x_y_z()[2]*180/np.pi, self.prtObj.yaw*180/np.pi) )
+            #print( "R, P, Y, calc_Y: %.3f, %.3f, %.3f, %.3f" % (rt.to_roll_pitch_yaw_x_y_z()[0]*180/np.pi, rt.to_roll_pitch_yaw_x_y_z()[1]*180/np.pi, rt.to_roll_pitch_yaw_x_y_z()[2]*180/np.pi, self.prtObj.yaw*180/np.pi) )
             o = Pose.from_rigid_transform(1, rt)
             # plot accelerometer estimated orientation of IMU
             publish_pose_list('IMUpose', [o], frame_id='origin')
-            publish_cloud('particle_max', self.max_pt.T+self.viconmsg.pos, c='b', frame_id='origin')
+            publish_cloud('particle_imu_max', self.imu_max.T+self.viconmsg.pos, c='b', frame_id='origin')
 
     def gen_heatmap(self, phi, theta):
         if self.counter%120 == 0:
@@ -135,52 +146,51 @@ class theFilter(object):
         z_bf = np.dot(np.transpose(vRw), z_axis)
         z_bf = np.dot(vRm, z_bf)
         R = tf_construct(x_bf.T, y_bf.T)
+        self.vicon_lRb = R
         p = Pose.from_rigid_transform(2, RigidTransform.from_Rt(R,self.viconmsg.pos))
         publish_pose_list('VICONpose', [p], frame_id='origin')
-        print 'R', R
 
-        #drawing true max as point
+        #drawing true max as point in new image and in local frame
         if self.imumsg != None:
             im2 = np.zeros([180,360])
-            PV = np.array([30,30,4]) - self.viconmsg.pos
-            PV_hat = np.array([1,0,0])
-            PV_hat = PV/(np.linalg.norm(PV))
-            publish_cloud('particle_true', PV_hat+self.viconmsg.pos, c='g', frame_id='origin')
-            lRb_val = self.prtObj.lRb()
-            bRl_val = lRb_val.T
-            #dot_prod = np.dot(bRl_val, np.array(PV_hat))
-            dot_prod = np.dot(np.matrix(R).T, np.array(PV_hat))
-            print 'dot_prod', dot_prod
-            az_el = self.prtObj.peRb_pt(dot_prod)   # local all the way to plane
-            az_el = np.array(az_el)
+            PV = np.array([[30],[30],[4]]) - np.array(self.viconmsg.pos)[:,np.newaxis]
+            self.vicon_max = PV/(np.linalg.norm(PV))
+            publish_cloud('particle_vicon_max', self.vicon_max.T+self.viconmsg.pos, c='g', frame_id='origin')
+            # lRb_val = self.prtObj.lRb()
+            # bRl_val = lRb_val.T
+            # dot_prod = np.dot(bRl_val, self.vicon_max)        # use IMU local-to-body transform
+            dot_prod = np.dot(self.vicon_lRb.T, self.vicon_max)   # use vicon local-to-body transform
+            az_el = self.prtObj.peRb_pt(dot_prod)
             if az_el[0] < 0:
                 az_el[0] = az_el[0]+2*np.pi
             self.gen_heatmap(az_el[0], az_el[1])
-            print az_el[0]*180/np.pi, az_el[1]*180/np.pi
             cv2.circle(im2, (int(az_el[0]*180/np.pi),int(az_el[1]*180/np.pi)), 5, (255,0,0))
             cv2.imshow('img2', im2)
             cv2.waitKey(1)
 
+            #self.prtObj.particles_l[:,0:1] = self.vicon_max
+
     def image_handler(self, channel, data):
         msg = image_t.decode(data)
-        # print 'data type', type(msg.data)
         im = np.asarray(bytearray(msg.data), dtype=np.uint8).reshape(msg.height, msg.width)
+
+        # get maximum value in heatmap, push to variable for plotting in local frame
         el,az = np.unravel_index(im.argmax(), im.shape)
+        az_el = np.array([[az*np.pi/180.0],[el*np.pi/180.0]])
         cv2.circle(im, (az,el), 5, (0,0,0))
         lRb_val = self.prtObj.lRb()
-        self.max_pt = np.dot(lRb_val, np.matrix(self.prtObj.bRpe_pt(np.array([az*np.pi/180.0,el*np.pi/180.0]))))
-        # print 'type is', type(im)
-        
-        # msg.utime = curr_time
-        # msg.width = 360
-        # msg.height = 180
-        # msg.row_stride = 360
-        # msg.pixelformat = 1497715271
-        # msg.size = len(h)
-        # msg.data = h
-        # msg.nmetadata = 0
-        # lc.publish("BF_HEATMAP", msg.encode())
+        self.imu_max = np.dot(lRb_val.T, np.matrix(self.prtObj.bRpe_pt(az_el)))     
+
         self.prtObj.upStateAcoustics_mod(None, im)
+
+        # print 'VICON azimuth elevation transforms:'
+        for i in range(0,self.N):
+            t = self.prtObj.peRb_pt(np.dot(self.vicon_lRb.T, self.prtObj.particles_l[:,i:i+1]))   # local all the way to plane
+            if t[0,0] < 0:
+                t[0,0] = t[0,0]+2*np.pi
+            # print t[0,0]*180/np.pi, t[1,0]*180/np.pi
+            # cv2.circle(im, (int(t[0,0]*180/np.pi),int(t[1,0]*180/np.pi)), 3, (0,0,0))
+
         cv2.imshow('img', im)
         cv2.waitKey(10)
 

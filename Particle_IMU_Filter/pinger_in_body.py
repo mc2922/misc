@@ -34,13 +34,15 @@ class particleIMU(object):
 	def bRpe(self, az, el):
 		return self.bRp(az, np.pi/2.0-el)
 
-	# psi/eta-point-to-body (convert from local point to body point given azimuth and elevation as vector) - returns pt
+	# psi/eta-point-to-body (convert from local point to body point given azimuth and elevation as vector) - returns pt col vector of 3 (x,y,z)
+	# pt is col vector of 2 (azimuth,elevation)
 	def bRpe_pt(self, pt):
-		return np.dot(self.bRpe(pt[0], pt[1]), np.array([[1.0],[0.0],[0.0]]))
+		return np.dot(self.bRpe(pt[0,0], pt[1,0]), np.array([[1.0],[0.0],[0.0]]))
 
-	# body-point-to-psi/eta (convert from body point to azimuth and declination given a (x,y,z) point in body-ball)
+	# body-point-to-psi/eta (convert from body point to azimuth and declination given a (x,y,z) point in body-ball) - returns pt col vector of 2 (azimuth,elevation)
+	# pt is col vector of 3 (x,y,z)
 	def peRb_pt(self, pt):
-		return np.arctan2(pt[0,1], pt[0,0]), np.arctan2(np.linalg.norm(pt[0,0:2]), pt[0,2])
+		return np.array([[np.arctan2(pt[1,0], pt[0,0])], [np.arctan2(np.linalg.norm(pt[0:2,0]), pt[2,0])]])
 
 	# azimuth-to-body (convert from accel/mag to body) - actually body-to-azimuth (want lRb = lRa * aRb -> Rz * bRa)
 	def bRa(self, acc=np.array([[0.0],[0.0],[9.81]]), mag=np.array([[1.0],[0.0],[0.0]])):
@@ -61,21 +63,25 @@ class particleIMU(object):
 
 	# body-to-local given accel
 	def lRb(self, accel=None):
+		########################## CHANGE FIXES ELEVATION ISSUES (MADE THE SAME AS IN propNavIMU)
 		if accel == None:
-			return np.dot(self.Rz(self.yaw), self.bRa(self.a_prev))
+			#return np.dot(self.Rz(self.yaw), self.bRa(acc=self.a_prev))
+			return np.dot(self.Rz(self.yaw), self.bRa(acc=self.a_prev).T)
 		else:
-			return np.dot(self.Rz(self.yaw), self.bRa(acc=accel))
+			#return np.dot(self.Rz(self.yaw), self.bRa(acc=accel))
+			return np.dot(self.Rz(self.yaw), self.bRa(acc=accel).T)
 
 	# propagate IMU measurements to keep track of yaw in local frame
 	def propNavIMU(self, dt, w, a, yaw=0.0):
-		bRa_val = self.bRa(a)
+		bRa_val = self.bRa(acc=a)
 		aRb = bRa_val.T
 		aGyr = np.dot(aRb,w)
 		dAzi = aGyr[2,0]
 		yaw = yaw + dAzi*dt
 		yaw = self.wrapRad(yaw)
-		lRb = np.dot(self.Rz(yaw),aRb)
-		return lRb, yaw
+		# lRb = np.dot(self.Rz(yaw),aRb)
+		# return lRb, yaw
+		return yaw
 
 	# TO-DO: use magnetometer to constrain IMU-calculated yaw in local frame
 	def magUpdateYaw_mod(self, mag, mRef=np.array([[1.0],[0.0],[0.0]])):
@@ -99,22 +105,26 @@ class particleIMU(object):
 			bpts[:,i] = np.dot(p.bRpe(pts[:,i]), np.array([[1.0],[0.0],[0.0]]))
 
 	def upStateIMU_mod(self, dt, w, a):
-		lRb, yaw = self.propNavIMU(dt, w, a, self.yaw)
-		self.a_prev = copy.deepcopy(a)
+		self.yaw = self.propNavIMU(dt, w, a, self.yaw)
+		self.a_prev[:,0:1] = a
 
 	def upStateAcoustics_mod(self, heatmap, im):
 		lRb_val = self.lRb()
+		########################### STRANGE OUTPUT (AFTER CHANGING lRb internally) bRl is lRb (switch)
 		bRl_val = lRb_val.T
+		# print 'bRl IMU:'
+		# print bRl_val
 		N = self.particles_l.shape[1]
 		az_el = np.zeros([2,N])
+		# print 'IMU azimuth elevation transforms:'
 		for i in range(0,N):
-			az_el[:,i] = self.peRb_pt(np.dot(bRl_val, self.particles_l[:,i]))	# local all the way to plane
+			az_el[:,i:i+1] = self.peRb_pt(np.dot(lRb_val, self.particles_l[:,i:i+1]))	# local all the way to plane
 			if az_el[0,i] < 0:
 				az_el[0,i] = az_el[0,i]+2*np.pi
-			cv2.circle(im, (int(az_el[0,i]*180/np.pi),int(az_el[1,i]*180/np.pi)), 3, (255,0,0))
-			print az_el[0,i]*180/np.pi, az_el[1,i]*180/np.pi
-			#print np.dot(lRb_val, np.matrix(self.bRpe_pt(az_el[:,0])))			# plane all the way to local
-		print 'THIS IS NOT DONE!!! STOP NOWW'
+			cv2.circle(im, (int(az_el[0,i]*180/np.pi),int(az_el[1,i]*180/np.pi)), 3, (0,0,0))
+			# print az_el[0,i]*180/np.pi, az_el[1,i]*180/np.pi
+			# print np.dot(bRl_val, np.matrix(self.bRpe_pt(az_el[:,i:i+1])))			# plane all the way to local
+		# print 'THIS IS NOT DONE!!! STOP NOWW'
 
 	#
 	# function upStateAcoustics!(x::State, wGrid::Array{Float64,2})
@@ -219,6 +229,41 @@ class particleIMU(object):
 		cumulative_sum[-1] = 1.  # avoid round-off errors
 		idxs = np.searchsorted(cumulative_sum, np.random.uniform(size=particles_weights.shape[0]))
 		# resample according to indexes
+		particles_phi[:] = particles_phi[idxs]
+		particles_theta[:] = particles_theta[idxs]
+		particles_weights[:] = np.ones(particles_weights.shape[0])/particles_weights.shape[0]
+
+	def systematic_resample(self, particles_phi, particles_theta, particles_weights):
+		N = len(particles_weights)
+		# make N subdivisions, and choose positions with a consistent random offset
+		positions = (np.random.random() + np.arange(N)) / N
+		idxs = np.zeros(N, 'i')
+		cumulative_sum = np.cumsum(particles_weights)
+		i, j = 0, 0
+		while i < N:
+			if positions[i] < cumulative_sum[j]:
+				idxs[i] = j
+				i += 1
+			else:
+				j += 1
+		particles_phi[:] = particles_phi[idxs]
+		particles_theta[:] = particles_theta[idxs]
+		particles_weights[:] = particles_weights[idxs]
+		particles_weights /= np.sum(particles_weights)
+
+	def systematic_resample_reweight(self, particles_phi, particles_theta, particles_weights):
+		N = len(particles_weights)
+		# make N subdivisions, and choose positions with a consistent random offset
+		positions = (np.random.random() + np.arange(N)) / N
+		idxs = np.zeros(N, 'i')
+		cumulative_sum = np.cumsum(particles_weights)
+		i, j = 0, 0
+		while i < N:
+			if positions[i] < cumulative_sum[j]:
+				idxs[i] = j
+				i += 1
+			else:
+				j += 1
 		particles_phi[:] = particles_phi[idxs]
 		particles_theta[:] = particles_theta[idxs]
 		particles_weights[:] = np.ones(particles_weights.shape[0])/particles_weights.shape[0]
