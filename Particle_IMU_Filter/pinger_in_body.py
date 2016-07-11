@@ -6,9 +6,11 @@ import copy
 
 import cv2
 
-#XYZ <-> FWD-PRT-OVH
-#l - local frame (gravity aligned) initialization: relative to initial yaw
-#b - body frame
+# XYZ <-> FWD-PRT-OVH
+# l - local frame (gravity aligned) initialization: relative to initial yaw
+# b - body frame
+# self.peRb_pt(np.dot(lRb_val, self.particles_l[:,i:i+1]))	# local all the way to plane
+# np.dot(bRl_val, self.bRpe_pt(az_el[:,i:i+1]))				# plane all the way to local
 
 class particleIMU(object):
 	def __init__(self, num_particles):
@@ -18,7 +20,7 @@ class particleIMU(object):
 		self.yaw = 0.0
 		self.a_prev = np.zeros([3,1])
 
-	# rotation about y-axis (pitch)
+	# rotation about y-axis (pitch) - should the -sin be switched?!!
 	def Ry(self, th):
 		return np.array([[np.cos(th),0.0,-np.sin(th)],[0.0,1.0,0.0],[np.sin(th),0.0,np.cos(th)]])
 
@@ -37,12 +39,18 @@ class particleIMU(object):
 	# psi/eta-point-to-body (convert from local point to body point given azimuth and elevation as vector) - returns pt col vector of 3 (x,y,z)
 	# pt is col vector of 2 (azimuth,elevation)
 	def bRpe_pt(self, pt):
-		return np.dot(self.bRpe(pt[0,0], pt[1,0]), np.array([[1.0],[0.0],[0.0]]))
+		N = pt.shape[1]
+		body_pt = np.zeros([3,N])
+		for i in range(0,N):
+			body_pt[:,i:i+1] = np.dot(self.bRpe(pt[0,i], pt[1,i]), np.array([[1.0],[0.0],[0.0]]))
+		return body_pt
 
 	# body-point-to-psi/eta (convert from body point to azimuth and declination given a (x,y,z) point in body-ball) - returns pt col vector of 2 (azimuth,elevation)
 	# pt is col vector of 3 (x,y,z)
 	def peRb_pt(self, pt):
-		return np.array([[np.arctan2(pt[1,0], pt[0,0])], [np.arctan2(np.linalg.norm(pt[0:2,0]), pt[2,0])]])
+		return np.array([np.arctan2(pt[1,:], pt[0,:]), np.arctan2(np.linalg.norm(pt[0:2,:], ord=None, axis=0), pt[2,:])])
+
+
 
 	# azimuth-to-body (convert from accel/mag to body) - actually body-to-azimuth (want lRb = lRa * aRb -> Rz * bRa)
 	def bRa(self, acc=np.array([[0.0],[0.0],[9.81]]), mag=np.array([[1.0],[0.0],[0.0]])):
@@ -53,22 +61,11 @@ class particleIMU(object):
 		w = np.cross(v,g.T)
 		return np.hstack((w.T, v.T, g))
 
-	# wrap between -PI and +PI
-	def wrapRad(self, th):
-		if th >= np.pi:
-			th = th-2.0*np.pi
-		if th < -np.pi:
-			th = th+2.0*np.pi
-		return th
-
 	# body-to-local given accel
 	def lRb(self, accel=None):
-		########################## CHANGE FIXES ELEVATION ISSUES (MADE THE SAME AS IN propNavIMU)
 		if accel == None:
-			#return np.dot(self.Rz(self.yaw), self.bRa(acc=self.a_prev))
 			return np.dot(self.Rz(self.yaw), self.bRa(acc=self.a_prev).T)
 		else:
-			#return np.dot(self.Rz(self.yaw), self.bRa(acc=accel))
 			return np.dot(self.Rz(self.yaw), self.bRa(acc=accel).T)
 
 	# propagate IMU measurements to keep track of yaw in local frame
@@ -79,76 +76,76 @@ class particleIMU(object):
 		dAzi = aGyr[2,0]
 		yaw = yaw + dAzi*dt
 		yaw = self.wrapRad(yaw)
-		# lRb = np.dot(self.Rz(yaw),aRb)
-		# return lRb, yaw
 		return yaw
 
 	# TO-DO: use magnetometer to constrain IMU-calculated yaw in local frame
 	def magUpdateYaw_mod(self, mag, mRef=np.array([[1.0],[0.0],[0.0]])):
-		lMag = np.dot(self.lRb(),mag)
-		magYaw = np.atan2(lMag[1,0],lMag[0,0])
-		dyaw = magYaw - yaw
-		#some kind of filter that very slowly pushes yaw to magYaw
-		filtdyaw = yawFilter(dyaw)
-		self.yaw = self.yaw + filtdyaw
+		lRb_val = self.lRb()
+		bRl_val = lRb_val.T
+		lMag = np.dot(bRl_val,mag)
+		return lMag
+
+		# lMag = np.dot(self.lRb(),mag)
+		# magYaw = np.atan2(lMag[1,0],lMag[0,0])
+		# dyaw = magYaw - yaw
+		# #some kind of filter that very slowly pushes yaw to magYaw
+		# filtdyaw = yawFilter(dyaw)
+		# self.yaw = self.yaw + filtdyaw
 
 	def yawFilter(self):
 		return 0.0
 
 	# given points in azimuth/elevation, convert to points in body frame
-	def projPtsPlaneToBodyBall_mod(self, pts, bpts=np.zeros([3,0])):
-		cols = pts.shape[1]
-		if cols != bpts.shape[1]:
-			bpts = np.zeros([3,cols])
-		for i in range(0,cols):
-			#bpts[:,i] = self.bRpe(pts[:,i])
-			bpts[:,i] = np.dot(p.bRpe(pts[:,i]), np.array([[1.0],[0.0],[0.0]]))
+	# def projPtsPlaneToBodyBall_mod(self, pts, bpts=np.zeros([3,0])):
+	# 	cols = pts.shape[1]
+	# 	if cols != bpts.shape[1]:
+	# 		bpts = np.zeros([3,cols])
+	# 	for i in range(0,cols):
+	# 		bpts[:,i] = np.dot(p.bRpe(pts[:,i]), np.array([[1.0],[0.0],[0.0]]))
 
 	def upStateIMU_mod(self, dt, w, a):
 		self.yaw = self.propNavIMU(dt, w, a, self.yaw)
 		self.a_prev[:,0:1] = a
+		
+		self.disperse_particles_l(self.deg_to_rad(0.35), self.deg_to_rad(0.35))
 
-	def upStateAcoustics_mod(self, heatmap, im):
+	def upStateAcoustics_mod(self, bf_importance, im):
 		lRb_val = self.lRb()
-		########################### STRANGE OUTPUT (AFTER CHANGING lRb internally) bRl is lRb (switch)
 		bRl_val = lRb_val.T
-		# print 'bRl IMU:'
-		# print bRl_val
-		N = self.particles_l.shape[1]
-		az_el = np.zeros([2,N])
-		# print 'IMU azimuth elevation transforms:'
-		for i in range(0,N):
-			az_el[:,i:i+1] = self.peRb_pt(np.dot(lRb_val, self.particles_l[:,i:i+1]))	# local all the way to plane
-			if az_el[0,i] < 0:
-				az_el[0,i] = az_el[0,i]+2*np.pi
-			cv2.circle(im, (int(az_el[0,i]*180/np.pi),int(az_el[1,i]*180/np.pi)), 3, (0,0,0))
-			# print az_el[0,i]*180/np.pi, az_el[1,i]*180/np.pi
-			# print np.dot(bRl_val, np.matrix(self.bRpe_pt(az_el[:,i:i+1])))			# plane all the way to local
-		# print 'THIS IS NOT DONE!!! STOP NOWW'
+		particles_pe = self.peRb_pt(np.dot(lRb_val, self.particles_l))
+		self.wrapRad2PiVec_mod(particles_pe[0,:])
 
-	#
-	# function upStateAcoustics!(x::State, wGrid::Array{Float64,2})
-	#   #importance sampling step to incorporate beam forming measurement information
-	#   lRb = getlRb(x)
-	#   # all particles in body ball
-	#   bRl = lRb'
-	#   N = size(bpts,2)
-	#   azel = zeros(2,N)
-	#   for i in 1:N
-	#     azel[:,i] = peRb(vec(bRl*x.lParticles[:,i]))
-	#   end
-	#   # sample importance
-	#
-	#   #resample (equal weight) -- decrease in inter-particle correlation
-	#
-	#   # go back to local ball
-	#   for i in 1:N
-	#     x.lParticles[:,i] = lRb*bRpe(vec(azel[:,i]))
-	#   end
-	#   nothing
-	# end
+		self.weights = self.sequential_importance_sampling(bf_importance**3, np.linspace(0,2*np.pi,bf_importance.shape[1]), np.linspace(0,np.pi,bf_importance.shape[0]), particles_pe[0,:], particles_pe[1,:], self.weights)
+		self.systematic_resample(particles_pe[0,:], particles_pe[1,:], self.weights)
+
+		# self.disperse_particles(particles_pe[0,:], particles_pe[1,:], self.deg_to_rad(3), self.deg_to_rad(3))
+		
+		self.particles_l = np.dot(bRl_val, self.bRpe_pt(particles_pe))
+
+		for i in range(0,self.particles_l.shape[1]):
+			cv2.circle(im, (int(particles_pe[0,i]*180/np.pi),int(particles_pe[1,i]*180/np.pi)), 3, (0,0,0))
+
 
 	### HELPERS ###
+	# wrap between -PI and +PI
+	def wrapRad(self, th):
+		if th >= np.pi:
+			th = th-2.0*np.pi
+		if th < -np.pi:
+			th = th+2.0*np.pi
+		return th
+
+	def wrapRad2PI(self, th):
+		if th >= 2.0*np.pi:
+			th = th-2.0*np.pi
+		if th < 0:
+			th = th+2.0*np.pi
+		return th
+
+	def wrapRad2PiVec_mod(self, vec):
+		vec[vec >= 2.0*np.pi] = vec[vec >= 2.0*np.pi] - 2.0*np.pi
+		vec[vec < 0.0] = vec[vec < 0.0] + 2.0*np.pi
+
 	def rad_to_deg(self, rad):
 		return rad*180.0/np.pi
 
@@ -207,8 +204,8 @@ class particleIMU(object):
 
 	def sequential_importance_sampling(self, importance, importance_phis, importance_thetas, particles_phi, particles_theta, particles_weights):
 		# find index closest to each sample position
-		closest_phi_idxs = self.find_closest(rad_to_deg(importance_phis), particles_phi)
-		closest_theta_idxs = self.find_closest(rad_to_deg(importance_thetas), particles_theta)
+		closest_phi_idxs = self.find_closest(importance_phis, particles_phi)
+		closest_theta_idxs = self.find_closest(importance_thetas, particles_theta)
 		# perfom importance sampling, re-weighting each particle
 		particles_weights *= importance[closest_theta_idxs, closest_phi_idxs]
 		particles_weights /= np.sum(particles_weights)
@@ -273,10 +270,18 @@ class particleIMU(object):
 		rand_theta = np.random.normal(0, theta_std, particles_theta.shape[0])
 		particles_phi += rand_phi
 		particles_theta += rand_theta
-		particles_phi[particles_phi<0] += 360.0
-		particles_phi[particles_phi>360] -= 360.0
+		particles_phi[particles_phi<0] += 2*np.pi
+		particles_phi[particles_phi>=2*np.pi] -= 2*np.pi
 		particles_theta[particles_theta<0] = -particles_theta[particles_theta<0]
-		particles_theta[particles_theta>180] = 360.0 - particles_theta[particles_theta>180]
+		particles_theta[particles_theta>=np.pi] = 2*np.pi - particles_theta[particles_theta>=np.pi]
+
+	def disperse_particles_l(self, phi_std, theta_std):
+		lRb_val = self.lRb()
+		bRl_val = lRb_val.T
+		particles_pe = self.peRb_pt(np.dot(lRb_val, self.particles_l))
+		self.wrapRad2PiVec_mod(particles_pe[0,:])
+		self.disperse_particles(particles_pe[0,:], particles_pe[1,:], phi_std, theta_std)
+		self.particles_l = np.dot(bRl_val, self.bRpe_pt(particles_pe))
 
 p = particleIMU(10)
 print np.dot(p.bRp(0.0,0.0), np.array([[1.0],[0.0],[0.0]]))

@@ -44,6 +44,11 @@ class theFilter(object):
         self.vicon_max = np.zeros([3,1])
         self.vicon_lRb = np.eye(3)
 
+        # all points at (1,0,0)
+        # self.prtObj.particles_l[0,:] = 1.0
+        # self.prtObj.particles_l[1,:] = 0.0
+        # self.prtObj.particles_l[2,:] = 0.0
+
         # transformation tests (5 points)
         # self.prtObj.particles_l[:,0:1] = np.array([[np.sin(0*np.pi/180.0)],[0.0],[np.cos(0*np.pi/180.0)]])
         # self.prtObj.particles_l[:,1:2] = np.array([[np.sin(30*np.pi/180.0)],[0.0],[np.cos(30*np.pi/180.0)]])
@@ -76,8 +81,16 @@ class theFilter(object):
             #print( "R, P, Y, calc_Y: %.3f, %.3f, %.3f, %.3f" % (rt.to_roll_pitch_yaw_x_y_z()[0]*180/np.pi, rt.to_roll_pitch_yaw_x_y_z()[1]*180/np.pi, rt.to_roll_pitch_yaw_x_y_z()[2]*180/np.pi, self.prtObj.yaw*180/np.pi) )
             o = Pose.from_rigid_transform(1, rt)
             # plot accelerometer estimated orientation of IMU
+            publish_pose_list('Localpose', [p], frame_id='origin')
             publish_pose_list('IMUpose', [o], frame_id='origin')
-            publish_cloud('particle_imu_max', self.imu_max.T+self.viconmsg.pos, c='b', frame_id='origin')
+            #publish_cloud('particle_imu_max', self.imu_max.T+self.viconmsg.pos, c='b', frame_id='origin')
+
+            #test magnetometer
+            lMag = self.prtObj.magUpdateYaw_mod(np.array(self.imumsg.mag)[:,np.newaxis])
+            #lMag = self.prtObj.magUpdateYaw_mod(np.array([[1.0],[0.0],[0.0]]))
+            #lMag /= np.linalg.norm(lMag)
+            #lMag = np.dot(bRl, np.array([[1.0],[0.0],[0.0]]))
+            publish_cloud('mag', np.array(self.imumsg.mag)+self.viconmsg.pos, c='b', frame_id='origin')
 
     def gen_heatmap(self, phi, theta):
         if self.counter%120 == 0:
@@ -173,6 +186,7 @@ class theFilter(object):
     def image_handler(self, channel, data):
         msg = image_t.decode(data)
         im = np.asarray(bytearray(msg.data), dtype=np.uint8).reshape(msg.height, msg.width)
+        bf_heatmap = im/255.0;
 
         # get maximum value in heatmap, push to variable for plotting in local frame
         el,az = np.unravel_index(im.argmax(), im.shape)
@@ -181,7 +195,7 @@ class theFilter(object):
         lRb_val = self.prtObj.lRb()
         self.imu_max = np.dot(lRb_val.T, np.matrix(self.prtObj.bRpe_pt(az_el)))     
 
-        self.prtObj.upStateAcoustics_mod(None, im)
+        self.prtObj.upStateAcoustics_mod(bf_heatmap, im)
 
         # print 'VICON azimuth elevation transforms:'
         for i in range(0,self.N):
