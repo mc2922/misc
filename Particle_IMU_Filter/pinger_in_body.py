@@ -19,6 +19,10 @@ class particleIMU(object):
 		self.weights = np.ones([1,self.num_particles])/self.num_particles
 		self.yaw = 0.0
 		self.a_prev = np.zeros([3,1])
+		self.bRi = np.eye(3)
+
+	def Rx(self, th):
+		return np.array([[1.0,0.0,0.0],[0.0,np.cos(th),-np.sin(th)],[0.0,np.sin(th),np.cos(th)]])
 
 	# rotation about y-axis (pitch) - should the -sin be switched?!!
 	def Ry(self, th):
@@ -50,8 +54,6 @@ class particleIMU(object):
 	def peRb_pt(self, pt):
 		return np.array([np.arctan2(pt[1,:], pt[0,:]), np.arctan2(np.linalg.norm(pt[0:2,:], ord=None, axis=0), pt[2,:])])
 
-
-
 	# azimuth-to-body (convert from accel/mag to body) - actually body-to-azimuth (want lRb = lRa * aRb -> Rz * bRa)
 	def bRa(self, acc=np.array([[0.0],[0.0],[9.81]]), mag=np.array([[1.0],[0.0],[0.0]])):
 		g = acc/np.linalg.norm(acc)
@@ -73,7 +75,7 @@ class particleIMU(object):
 		bRa_val = self.bRa(acc=a)
 		aRb = bRa_val.T
 		aGyr = np.dot(aRb,w)
-		dAzi = aGyr[2,0]
+		dAzi = aGyr[2,0] # - gBiasEst
 		yaw = yaw + dAzi*dt
 		yaw = self.wrapRad(yaw)
 		return yaw
@@ -106,7 +108,7 @@ class particleIMU(object):
 	def upStateIMU_mod(self, dt, w, a):
 		self.yaw = self.propNavIMU(dt, w, a, self.yaw)
 		self.a_prev[:,0:1] = a
-		
+
 		self.disperse_particles_l(self.deg_to_rad(0.35), self.deg_to_rad(0.35))
 
 	def upStateAcoustics_mod(self, bf_importance, im):
@@ -119,7 +121,7 @@ class particleIMU(object):
 		self.systematic_resample(particles_pe[0,:], particles_pe[1,:], self.weights)
 
 		# self.disperse_particles(particles_pe[0,:], particles_pe[1,:], self.deg_to_rad(3), self.deg_to_rad(3))
-		
+
 		self.particles_l = np.dot(bRl_val, self.bRpe_pt(particles_pe))
 
 		for i in range(0,self.particles_l.shape[1]):
@@ -151,6 +153,9 @@ class particleIMU(object):
 
 	def deg_to_rad(self, deg):
 		return deg*np.pi/180.0
+
+	def set_bRi(self,R):
+		self.bRi = R
 
 	def init_sphere_uniform(self):
 		self.weights = np.ones(self.num_particles)/self.num_particles
