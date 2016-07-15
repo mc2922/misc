@@ -43,16 +43,33 @@ class particleIMU(object):
 	# psi/eta-point-to-body (convert from local point to body point given azimuth and elevation as vector) - returns pt col vector of 3 (x,y,z)
 	# pt is col vector of 2 (azimuth,elevation)
 	def bRpe_pt(self, pt):
-		N = pt.shape[1]
-		body_pt = np.zeros([3,N])
-		for i in range(0,N):
-			body_pt[:,i:i+1] = np.dot(self.bRpe(pt[0,i], pt[1,i]), np.array([[1.0],[0.0],[0.0]]))
-		return body_pt
+		# N = pt.shape[1]
+		# body_pt = np.zeros([3,N])
+		# for i in range(0,N):
+		# 	body_pt[:,i:i+1] = np.dot(self.bRpe(pt[0,i], pt[1,i]), np.array([[1.0],[0.0],[0.0]]))
+		# return body_pt
+		return self.pe_TO_b(pt)
 
 	# body-point-to-psi/eta (convert from body point to azimuth and declination given a (x,y,z) point in body-ball) - returns pt col vector of 2 (azimuth,elevation)
 	# pt is col vector of 3 (x,y,z)
 	def peRb_pt(self, pt):
-		return np.array([np.arctan2(pt[1,:], pt[0,:]), np.arctan2(np.linalg.norm(pt[0:2,:], ord=None, axis=0), pt[2,:])])
+		# return np.array([np.arctan2(pt[1,:], pt[0,:]), np.arctan2(np.linalg.norm(pt[0:2,:], ord=None, axis=0), pt[2,:])])
+		return self.b_TO_pe(pt)
+
+	def b_TO_pe(self, pt):
+		N = pt.shape[1]
+		bTOpe = np.zeros([2,N])
+		bTOpe[0,:] = np.arctan2(pt[1,:],pt[0,:])
+		bTOpe[1,:] = np.arccos(pt[2,:]/np.linalg.norm(pt,axis=0))
+		return bTOpe
+
+	def pe_TO_b(self, pt):
+		N = pt.shape[1]
+		peTOb = np.zeros([3,N])
+		peTOb[0,:] = np.sin(pt[1,:])*np.cos(pt[0,:])
+		peTOb[1,:] = np.sin(pt[1,:])*np.sin(pt[0,:])
+		peTOb[2,:] = np.cos(pt[1,:])
+		return peTOb
 
 	# azimuth-to-body (convert from accel/mag to body) - actually body-to-azimuth (want lRb = lRa * aRb -> Rz * bRa)
 	def bRa(self, acc=np.array([[0.0],[0.0],[9.81]]), mag=np.array([[1.0],[0.0],[0.0]])):
@@ -109,12 +126,12 @@ class particleIMU(object):
 		self.yaw = self.propNavIMU(dt, w, a, self.yaw)
 		self.a_prev[:,0:1] = a
 
-		self.disperse_particles_l(self.deg_to_rad(0.35), self.deg_to_rad(0.35))
+		self.disperse_particles_l(self.deg_to_rad(0.7), self.deg_to_rad(0.7)) #0.35
 
 	def upStateAcoustics_mod(self, bf_importance, im):
 		lRb_val = self.lRb()
 		bRl_val = lRb_val.T
-		particles_pe = self.peRb_pt(np.dot(lRb_val, self.particles_l))
+		particles_pe = self.peRb_pt(np.dot(bRl_val, self.particles_l)) # lRb
 		self.wrapRad2PiVec_mod(particles_pe[0,:])
 
 		self.weights = self.sequential_importance_sampling(bf_importance**3, np.linspace(0,2*np.pi,bf_importance.shape[1]), np.linspace(0,np.pi,bf_importance.shape[0]), particles_pe[0,:], particles_pe[1,:], self.weights)
@@ -122,7 +139,7 @@ class particleIMU(object):
 
 		# self.disperse_particles(particles_pe[0,:], particles_pe[1,:], self.deg_to_rad(3), self.deg_to_rad(3))
 
-		self.particles_l = np.dot(bRl_val, self.bRpe_pt(particles_pe))
+		self.particles_l = np.dot(lRb_val, self.bRpe_pt(particles_pe)) # bRl
 
 		for i in range(0,self.particles_l.shape[1]):
 			cv2.circle(im, (int(particles_pe[0,i]*180/np.pi),int(particles_pe[1,i]*180/np.pi)), 3, (0,0,0))
@@ -283,10 +300,10 @@ class particleIMU(object):
 	def disperse_particles_l(self, phi_std, theta_std):
 		lRb_val = self.lRb()
 		bRl_val = lRb_val.T
-		particles_pe = self.peRb_pt(np.dot(lRb_val, self.particles_l))
+		particles_pe = self.peRb_pt(np.dot(bRl_val, self.particles_l)) #lRb_val
 		self.wrapRad2PiVec_mod(particles_pe[0,:])
 		self.disperse_particles(particles_pe[0,:], particles_pe[1,:], phi_std, theta_std)
-		self.particles_l = np.dot(bRl_val, self.bRpe_pt(particles_pe))
+		self.particles_l = np.dot(lRb_val, self.bRpe_pt(particles_pe)) #bRl_val
 
 p = particleIMU(10)
 print np.dot(p.bRp(0.0,0.0), np.array([[1.0],[0.0],[0.0]]))

@@ -19,7 +19,7 @@ import cv2
 azimuths = np.linspace(0,360,360)*np.pi/180.0
 elevations = np.linspace(0,180,180)*np.pi/180.0
 # parameters for spherical gaussian
-lobe_sharpness = 1
+lobe_sharpness = 1.5#1
 lobe_amplitude = 2
 lobe_values = np.zeros([elevations.shape[0],azimuths.shape[0]])
 lobe_values_x = np.zeros([elevations.shape[0],azimuths.shape[0]])
@@ -77,7 +77,7 @@ class theFilter(object):
             # bRa = self.prtObj.bRa(acc=np.matrix(self.imumsg.accel).T)
             # lRb = self.prtObj.lRb(np.matrix(self.imumsg.accel).T)
             bRl = lRb.T
-            rt = RigidTransform.from_Rt( bRl , self.viconmsg.pos)
+            rt = RigidTransform.from_Rt(lRb , self.viconmsg.pos) # bRl
             #print( "R, P, Y, calc_Y: %.3f, %.3f, %.3f, %.3f" % (rt.to_roll_pitch_yaw_x_y_z()[0]*180/np.pi, rt.to_roll_pitch_yaw_x_y_z()[1]*180/np.pi, rt.to_roll_pitch_yaw_x_y_z()[2]*180/np.pi, self.prtObj.yaw*180/np.pi) )
             o = Pose.from_rigid_transform(1, rt)
             # plot accelerometer estimated orientation of IMU
@@ -95,7 +95,13 @@ class theFilter(object):
     def gen_heatmap(self, phi, theta):
         if self.counter%120 == 0:
             lobe_values = lobe_values_x*np.sin(theta)*np.cos(phi) + lobe_values_y*np.sin(theta)*np.sin(phi) + lobe_values_z*np.cos(theta)
-            lobe_values = lobe_amplitude*np.exp(lobe_sharpness*(lobe_values-1))
+            lobe_values = 0.5*lobe_amplitude*np.exp(lobe_sharpness*(lobe_values-1))
+
+            phi0 = np.pi
+            theta0 = np.pi/2.0
+            lobe_values0 = lobe_values_x*np.sin(theta0)*np.cos(phi0) + lobe_values_y*np.sin(theta0)*np.sin(phi0) + lobe_values_z*np.cos(theta0)
+            lobe_values += 0.75*lobe_amplitude*np.exp(lobe_sharpness*(lobe_values0-1))
+
             min_lobe = np.min(lobe_values)
             max_lobe = np.max(lobe_values)
             lobe_values = (lobe_values-min_lobe)/(max_lobe-min_lobe)*255.0
@@ -128,16 +134,16 @@ class theFilter(object):
         y = vicon_orient[2]
         z = vicon_orient[3]
         # quaternion to rotation matrix
-        vRw = np.zeros([3,3],dtype=np.double)
-        vRw[0,0] = 1 - 2*y**2 - 2*z**2
-        vRw[0,1] = 2*x*y - 2*z*w
-        vRw[0,2] = 2*x*z + 2*y*w
-        vRw[1,0] = 2*x*y + 2*z*w
-        vRw[1,1] = 1 - 2*x**2 - 2*z**2
-        vRw[1,2] = 2*y*z - 2*x*w
-        vRw[2,0] = 2*x*z - 2*y*w
-        vRw[2,1] = 2*y*z + 2*x*w
-        vRw[2,2] = 1 - 2*x**2 - 2*y**2
+        wRv = np.zeros([3,3],dtype=np.double)
+        wRv[0,0] = 1 - 2*y**2 - 2*z**2
+        wRv[0,1] = 2*x*y - 2*z*w
+        wRv[0,2] = 2*x*z + 2*y*w
+        wRv[1,0] = 2*x*y + 2*z*w
+        wRv[1,1] = 1 - 2*x**2 - 2*z**2
+        wRv[1,2] = 2*y*z - 2*x*w
+        wRv[2,0] = 2*x*z - 2*y*w
+        wRv[2,1] = 2*y*z + 2*x*w
+        wRv[2,2] = 1 - 2*x**2 - 2*y**2
         # rotational transformation between microstrain and vicon (collocated)
         vRm = np.zeros([3,3],dtype=np.double)
         vRm[0,0] = 0.747293477674224
@@ -149,18 +155,9 @@ class theFilter(object):
         vRm[2,0] = 0.026901100276478
         vRm[2,1] = 0.016558196158918
         vRm[2,2] = -0.999500953948458
-        x_axis = np.array([[1],[0],[0]])
-        y_axis = np.array([[0],[1],[0]])
-        z_axis = np.array([[0],[0],[1]])
-        x_bf = np.dot(np.transpose(vRw), x_axis)
-        x_bf = np.dot(vRm, x_bf)
-        y_bf = np.dot(np.transpose(vRw), y_axis)
-        y_bf = np.dot(vRm, y_bf)
-        z_bf = np.dot(np.transpose(vRw), z_axis)
-        z_bf = np.dot(vRm, z_bf)
-        R = tf_construct(x_bf.T, y_bf.T)
-        self.vicon_lRb = R
-        p = Pose.from_rigid_transform(2, RigidTransform.from_Rt(R,self.viconmsg.pos))
+        wRm = np.dot(wRv, vRm)
+        self.vicon_lRb = wRm
+        p = Pose.from_rigid_transform(2, RigidTransform.from_Rt(wRm,self.viconmsg.pos))
         publish_pose_list('VICONpose', [p], frame_id='origin')
 
         #drawing true max as point in new image and in local frame
@@ -176,6 +173,7 @@ class theFilter(object):
             az_el = self.prtObj.peRb_pt(dot_prod)
             if az_el[0] < 0:
                 az_el[0] = az_el[0]+2*np.pi
+            # print az_el*180/np.pi
             self.gen_heatmap(az_el[0], az_el[1])
             cv2.circle(im2, (int(az_el[0]*180/np.pi),int(az_el[1]*180/np.pi)), 5, (255,0,0))
             cv2.imshow('img2', im2)
@@ -193,7 +191,7 @@ class theFilter(object):
         az_el = np.array([[az*np.pi/180.0],[el*np.pi/180.0]])
         cv2.circle(im, (az,el), 5, (0,0,0))
         lRb_val = self.prtObj.lRb()
-        self.imu_max = np.dot(lRb_val.T, np.matrix(self.prtObj.bRpe_pt(az_el)))     
+        self.imu_max = np.dot(lRb_val.T, np.matrix(self.prtObj.bRpe_pt(az_el)))
 
         self.prtObj.upStateAcoustics_mod(bf_heatmap, im)
 
