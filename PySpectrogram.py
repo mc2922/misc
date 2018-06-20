@@ -78,7 +78,7 @@ class pPySpectrogram(object):
             time.sleep(0.01)
 
 plt.ion()
-plt.figure()
+plt.figure(figsize=(8, 6))
 ax = plt.gca()
 fig = plt.gcf()
 img = ax.imshow(np.zeros((513,257)), aspect='auto', cmap='jet', interpolation='nearest', norm=LogNorm(vmin=1e-16,vmax=1e-5))
